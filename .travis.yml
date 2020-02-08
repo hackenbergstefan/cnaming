@@ -11,12 +11,6 @@ install:
   - python setup.py install
 env:
   - LD_LIBRARY_PATH=/usr/lib/llvm-8/lib
-stages:
-  - flake
-  - test
-jobs:
-  include:
-    - stage: flake
-      script: flake8 cnaming bin tests
-    - stage: test
-      script: python setup.py test
+script:
+  - flake8
+  - python setup.py test
