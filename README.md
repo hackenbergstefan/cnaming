@@ -2,3 +2,9 @@
 
 # cnaming
 Naming convention check for C source files
+
+## Implemented Naming Conventions
+
+### [Hungarian Naming Convention](https://en.wikipedia.org/wiki/Hungarian_notation)
+
+Despite there are many opinions agains Hungarian notation some projects use it.
