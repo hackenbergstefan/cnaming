@@ -11,6 +11,9 @@ install:
   - python setup.py install
 env:
   - LD_LIBRARY_PATH=/usr/lib/llvm-8/lib
+stages:
+  - flake
+  - test
 jobs:
   include:
     - stage: flake
