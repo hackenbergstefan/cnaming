@@ -7,13 +7,13 @@ python:
 before_install:
   - sudo apt-get -y install libclang-8-dev
   - pip install flake8
+install:
+  - python setup.py install
 env:
   - LD_LIBRARY_PATH=/usr/lib/llvm-8/lib
 jobs:
   include:
     - stage: flake
       script: flake8 cnaming bin tests
-    - stage: install
-      script: python setup.py install
     - stage: test
       script: python setup.py test
