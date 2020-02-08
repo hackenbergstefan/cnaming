@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+import argparse
+
+import cnaming
+import cnaming.hungarian
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('file', help='File to check.')
+    args = parser.parse_args()
+
+    result = cnaming.hungarian.HungarianNamingCheck().check(args.file)
+
+
+if __name__ == '__main__':
+    main()
