@@ -13,5 +13,5 @@ setup(
     scripts=[
         'bin/cnaming-check',
     ],
-    tests=['tests'],
+    test_suite='tests',
 )
