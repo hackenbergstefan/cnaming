@@ -107,7 +107,7 @@ class TestHungarian(unittest.TestCase):
         issues = self.check_inside_function('''
             typedef struct {} sFoobar_d;
 
-            uint8_t rgFoo[8];
+            uint8_t gFoo[8];
             uint32_t rgwFoo[];
             sFoobar_d rgsfoo[2];
         ''')
