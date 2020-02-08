@@ -21,6 +21,7 @@ rule_typedef = re.compile(r's' + rule_identifier + '_d')
 def check_kind(selector):
     if not hasattr(check_kind, 'selectors'):
         check_kind.selectors = []
+
     def check_kind_(func):
         check_kind.selectors.append((selector, func))
         return func
@@ -34,7 +35,7 @@ class HungarianNamingCheck(NamingCheck):
                 return func(self, node)
 
     @check_kind(lambda node: node.kind is clang.cindex.CursorKind.TYPEDEF_DECL)
-    def check_kind_vardecl(self, node):
+    def check_kind_typedecl(self, node):
         if not rule_typedef.match(node.displayname):
             return NamingIssue(node, '"{}" does not match "{}"'.format(
                 node.displayname,

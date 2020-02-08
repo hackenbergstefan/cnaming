@@ -10,7 +10,7 @@ class TestHungarian(unittest.TestCase):
     def check_with_tempfile(self, content):
         with tempfile.TemporaryDirectory() as tempdir:
             with open(os.path.join(tempdir, 'tmp.c'), 'w') as fp:
-                 fp.write(content)
+                fp.write(content)
 
             return cnaming.hungarian.HungarianNamingCheck().check(os.path.join(tempdir, 'tmp.c'))
 
@@ -69,27 +69,27 @@ class TestHungarian(unittest.TestCase):
 
     def test_globals(self):
         issues = self.check_outside_function('''
-        const uint32_t g_dwFoobar = 0;
-        uint8_t g_bFoobar = 0;
+            const uint32_t g_dwFoobar = 0;
+            uint8_t g_bFoobar = 0;
         ''')
         self.assertFalse(issues)
 
     def test_wrong_globals(self):
         issues = self.check_outside_function('''
-        const uint32_t dwFoobar = 0;
-        uint8_t bFoobar = 0;
+            const uint32_t dwFoobar = 0;
+            uint8_t bFoobar = 0;
         ''')
         self.assertEqual(len(issues), 2)
 
     def test_function_parameters(self):
         issues = self.check_outside_function('''
-        void foobar(uint32_t dwFoo, uint8_t *pbBar, uint8_t *prgbBaz) {}
+            void foobar(uint32_t dwFoo, uint8_t *pbBar, uint8_t *prgbBaz) {}
         ''')
         self.assertFalse(issues)
 
     def test_wrong_function_parameters(self):
         issues = self.check_outside_function('''
-        void foobar(uint32_t pFoo, uint8_t *bBar, uint8_t *prgBaz) {}
+            void foobar(uint32_t pFoo, uint8_t *bBar, uint8_t *prgBaz) {}
         ''')
         self.assertEqual(len(issues), 3)
 
