@@ -80,3 +80,15 @@ class TestHungarian(unittest.TestCase):
         uint8_t bFoobar = 0;
         ''')
         self.assertEqual(len(issues), 2)
+
+    def test_function_parameters(self):
+        issues = self.check_outside_function('''
+        void foobar(uint32_t dwFoo, uint8_t *pbBar) {}
+        ''')
+        self.assertFalse(issues)
+
+    def test_wrong_function_parameters(self):
+        issues = self.check_outside_function('''
+        void foobar(uint32_t pFoo, uint8_t *bBar) {}
+        ''')
+        self.assertEqual(len(issues), 2)

@@ -41,7 +41,11 @@ class HungarianNamingCheck(NamingCheck):
                 rule_typedef.pattern,
             ))
 
-    @check_kind(lambda node: node.kind is clang.cindex.CursorKind.VAR_DECL)
+    @check_kind(
+        lambda node:
+        node.kind is clang.cindex.CursorKind.VAR_DECL or
+        node.kind is clang.cindex.CursorKind.PARM_DECL
+    )
     def check_kind_vardecl(self, node):
         refed_type = list(node.get_children())[0]
         if refed_type.kind is not clang.cindex.CursorKind.TYPE_REF:
