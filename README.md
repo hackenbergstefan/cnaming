@@ -1,4 +1,8 @@
-[![Test Status](https://travis-ci.org/hackenbergstefan/cnaming.png)](https://travis-ci.org/hackenberstefan/cnaming)
+[![Build Status](https://travis-ci.org/hackenbergstefan/cnaming.png)](https://travis-ci.org/hackenberstefan/cnaming)
+![test](https://github.com/hackenbergstefan/cnaming/workflows/test/badge.svg)
+![flake8](https://github.com/hackenbergstefan/cnaming/workflows/flake8/badge.svg)
+![coverage](https://github.com/hackenbergstefan/cnaming/workflows/coverage/badge.svg)
+
 
 # cnaming
 Naming convention check for C source files
