@@ -5,15 +5,17 @@ import clang.cindex
 from . import NamingCheck, ParseError, NamingIssue
 
 
-identifier_re = r'[A-Z]\w*'
+rule_identifier = r'([A-Z][a-z0-9]*)+'
 
-naming_rules = [
-    (re.compile('uint8_t'), re.compile(r'b' + identifier_re)),
-    (re.compile('uint16_t'), re.compile(r'w' + identifier_re)),
-    (re.compile('uint32_t'), re.compile(r'dw' + identifier_re)),
-    (re.compile('uint64_t'), re.compile(r'qw' + identifier_re)),
-    (re.compile('s\w+_d'), re.compile(r's' + identifier_re)),
+rules_variables = [
+    (re.compile(r'uint8_t'), re.compile(r'b' + rule_identifier)),
+    (re.compile(r'uint16_t'), re.compile(r'w' + rule_identifier)),
+    (re.compile(r'uint32_t'), re.compile(r'dw' + rule_identifier)),
+    (re.compile(r'uint64_t'), re.compile(r'qw' + rule_identifier)),
+    (re.compile(r's\w+_d'), re.compile(r's' + rule_identifier)),
 ]
+
+rule_typedef = re.compile(r's' + rule_identifier + '_d')
 
 
 def check_kind(selector):
@@ -31,6 +33,14 @@ class HungarianNamingCheck(NamingCheck):
             if selector(node):
                 return func(self, node)
 
+    @check_kind(lambda node: node.kind is clang.cindex.CursorKind.TYPEDEF_DECL)
+    def check_kind_vardecl(self, node):
+        if not rule_typedef.match(node.displayname):
+            return NamingIssue(node, '"{}" does not match "{}"'.format(
+                node.displayname,
+                rule_typedef.pattern,
+            ))
+
     @check_kind(lambda node: node.kind is clang.cindex.CursorKind.VAR_DECL)
     def check_kind_vardecl(self, node):
         refed_type = list(node.get_children())[0]
@@ -40,7 +50,21 @@ class HungarianNamingCheck(NamingCheck):
         return self.check_variable_name(node, refed_type.displayname, node.displayname)
 
     def check_variable_name(self, node, typename, varname):
-        for re_type, re_name in naming_rules:
+        # Check for global modifier
+        if node.linkage is clang.cindex.LinkageKind.EXTERNAL:
+            if not varname.startswith('g_'):
+                return NamingIssue(node, 'Global "{}" does not start with "g_"'.format(varname))
+            else:
+                varname = varname[2:]
+        # Check for pointer modifier
+        if node.type.kind is clang.cindex.TypeKind.POINTER:
+            if not varname.startswith('p'):
+                return NamingIssue(node, 'Pointer "{}" does not start with "p"'.format(varname))
+            else:
+                varname = varname[1:]
+
+        # Check for variable name
+        for re_type, re_name in rules_variables:
             if re_type.match(typename) and not re_name.match(varname):
                 return NamingIssue(node, '"{} {}" does not match "{} {}"'.format(
                     typename,
