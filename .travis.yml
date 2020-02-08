@@ -1,3 +1,4 @@
+os: linux
 dist: bionic
 language: python
 python:
@@ -7,5 +8,7 @@ before_install:
   - sudo apt-get -y install libclang-8-dev
 install:
   - python setup.py install
-scripts:
-  - pytest
+env:
+  - LD_LIBRARY_PATH=/usr/lib/llvm-8/lib
+script:
+  - python setup.py test
