@@ -19,7 +19,15 @@ class NamingCheck:
             issues.append(self.check_node(node))
         for c in node.get_children():
             issues.extend(self.walk(c))
-        return [i for i in issues if i is not None]
+
+        # Return unique issues
+        issue_hashes = set()
+        return [
+            i for i in issues
+            if i is not None and
+            i.node.hash not in issue_hashes and
+            (issue_hashes.add(i.node.hash) or True)
+        ]
 
     def check_node(self, node):
         pass

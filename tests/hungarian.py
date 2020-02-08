@@ -124,3 +124,35 @@ class TestHungarian(unittest.TestCase):
             uint8_t **pbFoo;
         ''')
         self.assertEqual(len(issues), 1)
+
+    def test_struct_member(self):
+        issues = self.check_outside_function('''
+            typedef struct {} sFoo_d;
+            typedef struct
+            {
+                uint32_t dwX;
+                uint16_t wX;
+                uint8_t bX;
+                uint8_t rgbX[8];
+                uint8_t *pbX;
+                sFoo_d sFoo;
+                sFoo_d *psFoo;
+            } sBar_d;
+        ''')
+        self.assertFalse(issues)
+
+    def test_wrong_struct_member(self):
+        issues = self.check_outside_function('''
+            typedef struct {} sFoo_d;
+            typedef struct
+            {
+                uint32_t A;
+                uint16_t B;
+                uint8_t C;
+                uint8_t D[8];
+                uint8_t *bE;
+                sFoo_d sfoo;
+                sFoo_d *psbar;
+            } sBar_d;
+        ''')
+        self.assertEqual(len(issues), 7)

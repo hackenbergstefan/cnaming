@@ -1,16 +1,25 @@
 #!/usr/bin/env python
 import argparse
+import os
 
 import cnaming
 import cnaming.hungarian
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('file', help='File to check.')
+    parser.add_argument('--convention', choices=('Hungarian',), default='Hungarian', help='Naming convention to check agains.')
     args = parser.parse_args()
 
-    result = cnaming.hungarian.HungarianNamingCheck().check(args.file)
+    result = cnaming.hungarian.HungarianNamingCheck().check(os.path.abspath(args.file))
+
+    for res in result:
+        print('{}:{}: {}'.format(
+            res.node.location.line,
+            res.node.location.column,
+            res.text,
+        ))
 
 
 if __name__ == '__main__':

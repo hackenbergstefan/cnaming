@@ -45,6 +45,7 @@ class HungarianNamingCheck(NamingCheck):
     @check_kind(
         lambda node:
         node.kind is clang.cindex.CursorKind.VAR_DECL or
+        node.kind is clang.cindex.CursorKind.FIELD_DECL or
         node.kind is clang.cindex.CursorKind.PARM_DECL
     )
     def check_kind_vardecl(self, node):
@@ -56,7 +57,7 @@ class HungarianNamingCheck(NamingCheck):
 
     def check_variable_name(self, node, typename, varname):
         # Check for global modifier
-        if node.linkage is clang.cindex.LinkageKind.EXTERNAL:
+        if node.kind is not clang.cindex.CursorKind.FIELD_DECL and node.linkage is clang.cindex.LinkageKind.EXTERNAL:
             if not varname.startswith('g_'):
                 return NamingIssue(node, 'Global "{}" does not start with "g_"'.format(varname))
             else:
@@ -82,9 +83,9 @@ class HungarianNamingCheck(NamingCheck):
         # Check for variable name
         for re_type, re_name in rules_variables:
             if re_type.match(typename) and not re_name.match(varname):
-                return NamingIssue(node, '"{} {}" does not match "{} {}"'.format(
-                    typename,
+                return NamingIssue(node, '"{}" at "{} {}" does not match "{}"'.format(
                     varname,
-                    re_type.pattern,
+                    typename,
+                    node.displayname,
                     re_name.pattern,
                 ))
