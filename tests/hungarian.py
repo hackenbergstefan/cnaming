@@ -83,12 +83,44 @@ class TestHungarian(unittest.TestCase):
 
     def test_function_parameters(self):
         issues = self.check_outside_function('''
-        void foobar(uint32_t dwFoo, uint8_t *pbBar) {}
+        void foobar(uint32_t dwFoo, uint8_t *pbBar, uint8_t *prgbBaz) {}
         ''')
         self.assertFalse(issues)
 
     def test_wrong_function_parameters(self):
         issues = self.check_outside_function('''
-        void foobar(uint32_t pFoo, uint8_t *bBar) {}
+        void foobar(uint32_t pFoo, uint8_t *bBar, uint8_t *prgBaz) {}
         ''')
-        self.assertEqual(len(issues), 2)
+        self.assertEqual(len(issues), 3)
+
+    def test_array_declarations(self):
+        issues = self.check_inside_function('''
+            typedef struct {} sFoobar_d;
+
+            uint8_t rgbFoo[8];
+            uint32_t rgdwFoo[];
+            sFoobar_d rgsFoo[2];
+        ''')
+        self.assertFalse(issues)
+
+    def test_wrong_array_declarations(self):
+        issues = self.check_inside_function('''
+            typedef struct {} sFoobar_d;
+
+            uint8_t rgFoo[8];
+            uint32_t rgwFoo[];
+            sFoobar_d rgsfoo[2];
+        ''')
+        self.assertEqual(len(issues), 3)
+
+    def test_doublepointer(self):
+        issues = self.check_inside_function('''
+            uint8_t **ppbFoo;
+        ''')
+        self.assertFalse(issues)
+
+    def test_wrong_doublepointer(self):
+        issues = self.check_inside_function('''
+            uint8_t **pbFoo;
+        ''')
+        self.assertEqual(len(issues), 1)

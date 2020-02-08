@@ -62,10 +62,21 @@ class HungarianNamingCheck(NamingCheck):
                 varname = varname[2:]
         # Check for pointer modifier
         if node.type.kind is clang.cindex.TypeKind.POINTER:
-            if not varname.startswith('p'):
-                return NamingIssue(node, 'Pointer "{}" does not start with "p"'.format(varname))
+            ptypecount = node.type.spelling.count('*')
+            pnamecount = sum(node.displayname[i:].startswith('p') for i in range(len(node.displayname)))
+            if ptypecount != pnamecount:
+                return NamingIssue(node, 'Pointername "{}" does not match its type "{}"'.format(varname, node.type.spelling))
             else:
-                varname = varname[1:]
+                varname = varname[pnamecount:]
+            # Optional "rg" prefix (used when length is given)
+            if varname.startswith('rg'):
+                varname = varname[2:]
+        # Check for array modifier
+        elif node.type.kind is clang.cindex.TypeKind.CONSTANTARRAY or node.type.kind is clang.cindex.TypeKind.INCOMPLETEARRAY:
+            if not varname.startswith('rg'):
+                return NamingIssue(node, 'Array "{}" does not start with "rg"'.format(varname))
+            else:
+                varname = varname[2:]
 
         # Check for variable name
         for re_type, re_name in rules_variables:
