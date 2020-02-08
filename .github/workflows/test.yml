@@ -1,4 +1,4 @@
-name: CNaming
+name: test
 
 on: [push]
 
