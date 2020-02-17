@@ -55,7 +55,7 @@ class NamingCheck:
     def walk(self, node):
         issues = []
         if os.path.abspath(str(node.location.file)) == os.path.abspath(self.file):
-            issues.append(self.check_node(node))
+            issues.append(self.ruleset.check(node))
         for c in node.get_children():
             issues.extend(self.walk(c))
 
@@ -68,45 +68,15 @@ class NamingCheck:
             (issue_hashes.add(i.node.node.hash) or True)
         ]
 
-    def check_node(self, node):
-        if node.kind is clang.cindex.CursorKind.TYPEDEF_DECL:
-            return self.check_node_typedef(Typedef(node), node.displayname)
-        elif node.kind is clang.cindex.CursorKind.VAR_DECL or \
-            node.kind is clang.cindex.CursorKind.FIELD_DECL or \
-            node.kind is clang.cindex.CursorKind.PARM_DECL:
-            refed_type = list(node.get_children())[0]
-            if refed_type.kind is not clang.cindex.CursorKind.TYPE_REF:
-                raise ParseError('Wrong kind. Is: {} Excpected: {}'.format(refed_type.kind, clang.cindex.CursorKind.VAR_DECL))
-            declaration = Declaration(node, refed_type)
-            return self.check_node_declaration(declaration, declaration.typename, declaration.declname)
-
-    def check_node_declaration(self, node, typename, declname):
-        for name, rule in self.ruleset['variable_declarations'].items():
-            if 'selector' in rule and not rule['selector'](node):
-                continue
-            if re.fullmatch(rule['type'], typename):
-                match = re.fullmatch(rule['rule'], declname)
-                if not match:
-                    return NamingIssue(node, name)
-                if 'forward' in rule:
-                    return self.check_node_declaration(node, node.node_type.displayname, match.group(1))
-
-    def check_node_typedef(self, node, typename):
-        for name, rule in self.ruleset['typedef_declarations'].items():
-            if 'selector' in rule and not rule['selector'](node):
-                continue
-            if not re.fullmatch(rule['rule'], typename):
-                return NamingIssue(node, name)
-
 
 class ParseError(Exception):
     pass
 
 
 class NamingIssue:
-    def __init__(self, node, text):
+    def __init__(self, node, rule):
         self.node = node
-        self.text = text
+        self.rule = rule
 
     def __repr__(self):
-        return '<NamingIssue "{}">'.format(self.text)
+        return '<NamingIssue @{}:{}: "{}">'.format(self.node.location.line, self.node.location.column, str(self.rule))

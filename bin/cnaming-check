@@ -34,7 +34,7 @@ def main():
             res.node.location.line,
             res.node.location.column,
             str(res.node),
-            res.text,
+            str(res.rule),
         ))
 
     if len(result) > 0:
