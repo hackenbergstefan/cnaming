@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 setup(
@@ -6,7 +6,7 @@ setup(
     author='Stefan Hackenberg',
     author_email='mail@stefan-hackenberg.de',
     version='0.1',
-    packages=['cnaming'],
+    packages=find_packages(),
     install_requires=[
         'clang',
     ],

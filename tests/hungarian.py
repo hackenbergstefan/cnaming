@@ -3,7 +3,8 @@ import tempfile
 import os
 
 import cnaming
-import cnaming.hungarian
+import cnaming.rules
+import cnaming.rules.hungarian
 
 
 class TestHungarian(unittest.TestCase):
@@ -12,7 +13,7 @@ class TestHungarian(unittest.TestCase):
             with open(os.path.join(tempdir, 'tmp.c'), 'w') as fp:
                 fp.write(content)
 
-            return cnaming.hungarian.HungarianNamingCheck().check(os.path.join(tempdir, 'tmp.c'))
+            return cnaming.NamingCheck(cnaming.rules.hungarian.ruleset).check(os.path.join(tempdir, 'tmp.c'))
 
     def check_inside_function(self, declaration):
         return self.check_with_tempfile('''
@@ -156,3 +157,23 @@ class TestHungarian(unittest.TestCase):
             } sBar_d;
         ''')
         self.assertEqual(len(issues), 7)
+
+    def test_enum(self):
+        issues = self.check_outside_function('''
+            typedef enum
+            {
+                A,
+                B
+            } eEnum_t;
+        ''')
+        self.assertFalse(issues)
+
+    def test_wrong_enum(self):
+        issues = self.check_outside_function('''
+            typedef enum
+            {
+                A,
+                B
+            } myEnum;
+        ''')
+        self.assertEqual(len(issues), 1)
