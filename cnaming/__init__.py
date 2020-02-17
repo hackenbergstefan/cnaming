@@ -81,22 +81,22 @@ class NamingCheck:
             return self.check_node_declaration(declaration, declaration.typename, declaration.declname)
 
     def check_node_declaration(self, node, typename, declname):
-         for name, rule in self.ruleset['variable_declarations'].items():
-             if 'selector' in rule and not rule['selector'](node):
-                 continue
-             if re.fullmatch(rule['type'], typename):
-                 match = re.fullmatch(rule['rule'], declname)
-                 if not match:
-                     return NamingIssue(node, name)
-                 if 'forward' in rule:
-                     return self.check_node_declaration(node, node.node_type.displayname, match.group(1))
+        for name, rule in self.ruleset['variable_declarations'].items():
+            if 'selector' in rule and not rule['selector'](node):
+                continue
+            if re.fullmatch(rule['type'], typename):
+                match = re.fullmatch(rule['rule'], declname)
+                if not match:
+                    return NamingIssue(node, name)
+                if 'forward' in rule:
+                    return self.check_node_declaration(node, node.node_type.displayname, match.group(1))
 
     def check_node_typedef(self, node, typename):
-         for name, rule in self.ruleset['typedef_declarations'].items():
-             if 'selector' in rule and not rule['selector'](node):
-                 continue
-             if not re.fullmatch(rule['rule'], typename):
-                 return NamingIssue(node, name)
+        for name, rule in self.ruleset['typedef_declarations'].items():
+            if 'selector' in rule and not rule['selector'](node):
+                continue
+            if not re.fullmatch(rule['rule'], typename):
+                return NamingIssue(node, name)
 
 
 class ParseError(Exception):
