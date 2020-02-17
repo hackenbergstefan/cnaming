@@ -1,5 +1,4 @@
 import os
-import re
 
 import clang
 import clang.cindex

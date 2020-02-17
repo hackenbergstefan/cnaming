@@ -5,12 +5,17 @@ import clang.cindex
 
 from .. import Declaration, NamingIssue, ParseError, Typedef
 
+rulesets = {}
+
 
 class Ruleset:
     def __init__(self, name, variable_declarations=None, typedef_declarations=None, function_declarations=None):
         self.name = name
         self.variable_declarations = variable_declarations
         self.typedef_declarations = typedef_declarations
+
+        # Register ruleset
+        rulesets[self.name] = self
 
     def check(self, node):
         if node.kind is clang.cindex.CursorKind.TYPEDEF_DECL:
@@ -53,3 +58,10 @@ class Rule:
 
     def __repr__(self):
         return self.description
+
+
+def load_builtin_rules():
+    import importlib
+    import pkgutil
+    for pkg in pkgutil.walk_packages(__path__):
+        importlib.import_module(__name__ + '.' + pkg.name)

@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 import argparse
-import importlib
 import os
-import pkgutil
 import sys
 
 import cnaming
 import cnaming.rules
 
 
+cnaming.rules.load_builtin_rules()
+
+
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('ruleset', help='''Ruleset to check against.
     Either file containing rules or name of contained ruleset.
-    Contained rulesets: ''' + ', '.join('"{}"'.format(p.name) for p in pkgutil.walk_packages(cnaming.rules.__path__)))
+    Contained rulesets: ''' + ', '.join('"{}"'.format(ruleset) for ruleset in cnaming.rules.rulesets.keys()))
     parser.add_argument('file', help='File to check.')
     args = parser.parse_args()
 
@@ -23,8 +24,7 @@ def main():
         exec(open(args.ruleset).read(), {}, locs)
         ruleset = locs['ruleset']
     else:
-        mod = importlib.import_module('cnaming.rules.' + args.ruleset)
-        ruleset = mod.ruleset
+        ruleset = cnaming.rules.rulesets[args.ruleset]
 
     # Check file
     result = cnaming.NamingCheck(ruleset).check(os.path.abspath(args.file))
