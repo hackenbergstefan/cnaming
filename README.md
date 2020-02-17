@@ -19,11 +19,9 @@ Hungarian ruleset is implemented in [hungarian.py](cnaming/rules/hungarian.py).
 
 Run the script `cnaming-check RULESET FILE` to check a file.
 
-For instance: Consider the following C source file:
-7:18:"uint32_t A": uint32_t starts with dw
-9:17:"uint8_t C": uint8_t starts with b
-15:19:"uint16_t * wX": pointer starts with p
-16:18:"uint8_t * pX": uint8_t starts with b
+### Example
+
+Consider the following C source file:
 
 ```c
 // tmp.c
