@@ -13,12 +13,17 @@ Naming convention check for C source files implemented in python with usage of l
 
 Despite there are many opinions agains Hungarian notation some projects use it.
 
+Hungarian ruleset is implemented in [hungarian.py](cnaming/rules/hungarian.py).
 
 ## How to use it
 
-Run the script `cnaming-check FILE` to check a file.
+Run the script `cnaming-check RULESET FILE` to check a file.
 
 For instance: Consider the following C source file:
+7:18:"uint32_t A": uint32_t starts with dw
+9:17:"uint8_t C": uint8_t starts with b
+15:19:"uint16_t * wX": pointer starts with p
+16:18:"uint8_t * pX": uint8_t starts with b
 
 ```c
 // tmp.c
@@ -41,10 +46,10 @@ void fubar(uint32_t dwFoo, uint8_t *prgbFoo)
 }
 ```
 
-Running `cnaming-check tmp.c` exits with code `1` and gives the output:
+Running `cnaming-check hungarian tmp.c` exits with code `1` and gives the output:
 ```
-7:14: "A" at "uint32_t A" does not match "dw([A-Z][a-z0-9]*)+"
-9:13: "C" at "uint8_t C" does not match "b([A-Z][a-z0-9]*)+"
-15:15: Pointername "wX" does not match its type "uint16_t *"
-16:14: "X" at "uint8_t pX" does not match "b([A-Z][a-z0-9]*)+"
+7:18:"uint32_t A": uint32_t starts with dw
+9:17:"uint8_t C": uint8_t starts with b
+15:19:"uint16_t * wX": pointer starts with p
+16:18:"uint8_t * pX": uint8_t starts with b
 ```
