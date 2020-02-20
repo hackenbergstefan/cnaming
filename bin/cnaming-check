@@ -34,7 +34,7 @@ def main():
             res.node.location.line,
             res.node.location.column,
             str(res.node),
-            str(res.rule),
+            str(res.rule) if isinstance(res, cnaming.NamingIssue) else 'No Rule matched',
         ))
 
     if len(result) > 0:

@@ -3,7 +3,7 @@ import re
 import clang
 import clang.cindex
 
-from .. import Declaration, NamingIssue, ParseError, Typedef
+from .. import Declaration, NamingIssue, NoRuleIssue, ParseError, Typedef
 
 rulesets = {}
 
@@ -23,22 +23,32 @@ class Ruleset:
         elif node.kind is clang.cindex.CursorKind.VAR_DECL or \
             node.kind is clang.cindex.CursorKind.FIELD_DECL or \
             node.kind is clang.cindex.CursorKind.PARM_DECL:
-            refed_type = list(node.get_children())[0]
-            if refed_type.kind is not clang.cindex.CursorKind.TYPE_REF:
-                raise ParseError('Wrong kind. Is: {} Excpected: {}'.format(refed_type.kind, clang.cindex.CursorKind.VAR_DECL))
-            declaration = Declaration(node, refed_type)
+            refed_types = [n for n in node.get_children() if n.kind is clang.cindex.CursorKind.TYPE_REF]
+            if len(refed_types) == 0:
+                raise ParseError('No CursorKind.TYPE_REF found under {}:{}:{}.'.format(node.location.line, node.location.column, node.spelling))
+            declaration = Declaration(node, refed_types[0])
             return self.check_variable_declaration(declaration, declaration.typename, declaration.declname)
 
     def check_variable_declaration(self, node, typename, declname):
+        one_matched = False
         for rule in self.variable_declarations:
             if not rule.selector(node):
                 continue
-            if rule.type.fullmatch(typename):
-                match = rule.rule.fullmatch(declname)
-                if not match:
+            match_type = rule.type.fullmatch(typename)
+            if match_type:
+                one_matched = True
+                match_rule = rule.rule.fullmatch(declname)
+                if not match_rule:
                     return NamingIssue(node, rule)
                 if rule.forward:
-                    return self.check_variable_declaration(node, node.node_type.displayname, match.group(1))
+                    return self.check_variable_declaration(
+                        node,
+                        [g for g in match_type.groups() if g][0],
+                        [g for g in match_rule.groups() if g][0],
+                    )
+        if one_matched is False:
+            return NoRuleIssue(node)
+
 
     def check_typedef_declarations(self, node, typename):
         for rule in self.typedef_declarations:

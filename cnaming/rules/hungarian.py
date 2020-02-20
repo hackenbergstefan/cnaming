@@ -13,12 +13,16 @@ ruleset = Ruleset(
         # Struct type
         Rule('struct type starts with s', type=r's.+_d', rule=r's([A-Z][a-z0-9]*)+'),
         # Pointer handling
-        Rule('pointer starts with p', type=r'.+ \*|p.+', rule=r'p(?:rg)?(.+)', forward=True),
-        Rule('pointer to pointer starts with pp', type=r'p.+ \*|.+ \*\*', rule=r'pp(?:rg)?(.+)', forward=True),
+        Rule('pointer starts with p', type=r'(\S+) \*|p(\S+)', rule=r'p(?:rg)?(.+)', forward=True),
+        Rule('pointer to pointer starts with pp', type=r'p(\S+) \*|(\S+) \*\*', rule=r'pp(?:rg)?(.+)', forward=True),
         # Globals
-        Rule('global starts with g_', type=r'global .+', rule=r'g_(.+)', forward=True),
+        Rule('global starts with g_', type=r'global (.+)', rule=r'g_(.+)', forward=True),
         # Arrays
-        Rule('array starts with rg', type=r'\w+ \[\d*\]', rule=r'rg(.+)', forward=True),
+        Rule('array starts with rg', type=r'(\w+) \[\d*\]', rule=r'rg(.+)', forward=True),
+        # Constants
+        Rule('Constants are free', type=r'const (.+)', rule=r'(.+)', forward=True),
+        # Constants
+        Rule('non struct type is free', type=r'(?!s)\S+_d', rule=r'.+'),
     ],
     typedef_declarations=[
         # Enum typedef

@@ -54,6 +54,7 @@ class TestHungarian(unittest.TestCase):
             sFoobar_d *sFoo;
         ''')
         self.assertEqual(len(issues), 6)
+        self.assertFalse([i for i in issues if isinstance(i, cnaming.NoRuleIssue)])
 
     def test_typedef(self):
         issues = self.check_outside_function('''
@@ -67,9 +68,11 @@ class TestHungarian(unittest.TestCase):
             typedef struct {} sFoobar;
         ''')
         self.assertEqual(len(issues), 2)
+        self.assertFalse([i for i in issues if isinstance(i, cnaming.NoRuleIssue)])
 
     def test_globals(self):
         issues = self.check_outside_function('''
+            const uint8_t *g_pbFoo;
             const uint32_t g_dwFoobar = 0;
             uint8_t g_bFoobar = 0;
         ''')
@@ -77,10 +80,12 @@ class TestHungarian(unittest.TestCase):
 
     def test_wrong_globals(self):
         issues = self.check_outside_function('''
+            const uint8_t *pbFoo;
             const uint32_t dwFoobar = 0;
             uint8_t bFoobar = 0;
         ''')
-        self.assertEqual(len(issues), 2)
+        self.assertEqual(len(issues), 3)
+        self.assertFalse([i for i in issues if isinstance(i, cnaming.NoRuleIssue)])
 
     def test_function_parameters(self):
         issues = self.check_outside_function('''
@@ -93,6 +98,7 @@ class TestHungarian(unittest.TestCase):
             void foobar(uint32_t pFoo, uint8_t *bBar, uint8_t *prgBaz) {}
         ''')
         self.assertEqual(len(issues), 3)
+        self.assertFalse([i for i in issues if isinstance(i, cnaming.NoRuleIssue)])
 
     def test_array_declarations(self):
         issues = self.check_inside_function('''
@@ -116,15 +122,18 @@ class TestHungarian(unittest.TestCase):
 
     def test_doublepointer(self):
         issues = self.check_inside_function('''
+            const uint8_t **ppbFoo;
             uint8_t **ppbFoo;
         ''')
         self.assertFalse(issues)
 
     def test_wrong_doublepointer(self):
         issues = self.check_inside_function('''
+            const uint8_t **c_pbFoo;
             uint8_t **pbFoo;
         ''')
-        self.assertEqual(len(issues), 1)
+        self.assertEqual(len(issues), 2)
+        self.assertFalse([i for i in issues if isinstance(i, cnaming.NoRuleIssue)])
 
     def test_struct_member(self):
         issues = self.check_outside_function('''
@@ -157,6 +166,7 @@ class TestHungarian(unittest.TestCase):
             } sBar_d;
         ''')
         self.assertEqual(len(issues), 7)
+        self.assertFalse([i for i in issues if isinstance(i, cnaming.NoRuleIssue)])
 
     def test_enum(self):
         issues = self.check_outside_function('''
@@ -177,3 +187,11 @@ class TestHungarian(unittest.TestCase):
             } myEnum;
         ''')
         self.assertEqual(len(issues), 1)
+        self.assertFalse([i for i in issues if isinstance(i, cnaming.NoRuleIssue)])
+
+    def test_infered_type(self):
+        issues = self.check_outside_function('''
+            typedef uint8_t *hdl_d;
+            static const hdl_d *pFoo;
+        ''')
+        self.assertFalse(issues)

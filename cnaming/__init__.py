@@ -79,3 +79,11 @@ class NamingIssue:
 
     def __repr__(self):
         return '<NamingIssue @{}:{}: "{}">'.format(self.node.location.line, self.node.location.column, str(self.rule))
+
+
+class NoRuleIssue:
+    def __init__(self, node):
+        self.node = node
+
+    def __repr__(self):
+        return '<NoRuleIssue @{}:{}: "{}">'.format(self.node.location.line, self.node.location.column, self.node.spelling)
