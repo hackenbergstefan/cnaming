@@ -22,7 +22,7 @@ ruleset = Ruleset(
         # Constants
         Rule('Constants are free', type=r'const (.+)', rule=r'(.+)', forward=True),
         # Constants
-        Rule('non struct type is free', type=r'(?!s)\S+_d', rule=r'.+'),
+        Rule('non struct type is unrestricted', type=r'(?!s)\S+_d', rule=r'.+'),
     ],
     typedef_declarations=[
         # Enum typedef

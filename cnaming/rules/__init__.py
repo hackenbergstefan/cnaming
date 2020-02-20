@@ -49,7 +49,6 @@ class Ruleset:
         if one_matched is False:
             return NoRuleIssue(node)
 
-
     def check_typedef_declarations(self, node, typename):
         for rule in self.typedef_declarations:
             if not rule.selector(node):
