@@ -46,9 +46,9 @@ class NamingCheck:
         self.index = clang.cindex.Index.create()
         self.ruleset = ruleset
 
-    def check(self, file):
+    def check(self, file, clang_args=None):
         self.file = file
-        tu = self.index.parse(file)
+        tu = self.index.parse(file, args=clang_args)
         return self.walk(tu.cursor)
 
     def walk(self, node):

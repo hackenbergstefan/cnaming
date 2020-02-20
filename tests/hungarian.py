@@ -195,3 +195,27 @@ class TestHungarian(unittest.TestCase):
             static const hdl_d *pFoo;
         ''')
         self.assertFalse(issues)
+
+    def test_clang_args(self):
+        with tempfile.TemporaryDirectory() as tempdir:
+            with open(os.path.join(tempdir, 'tmp.c'), 'w') as fp:
+                fp.write('''
+                #include <foo.h>
+
+                const sFoo_d g_sBar;
+                ''')
+            os.mkdir(os.path.join(tempdir, 'foo'))
+            with open(os.path.join(tempdir, 'foo', 'foo.h'), 'w') as fp:
+                fp.write('''
+                typedef struct {} sFoo_d;
+                ''')
+
+            checker = cnaming.NamingCheck(cnaming.rules.hungarian.ruleset)
+            with self.assertRaises(cnaming.ParseError):
+                checker.check(os.path.join(tempdir, 'tmp.c'))
+
+            issues = checker.check(
+                os.path.join(tempdir, 'tmp.c'),
+                clang_args=['-I{}'.format(os.path.join(tempdir, 'foo'))]
+            )
+            self.assertFalse(issues)

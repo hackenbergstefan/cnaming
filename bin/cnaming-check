@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import os
+import shlex
 import sys
 
 import cnaming
@@ -16,6 +17,7 @@ def main():
     Either file containing rules or name of contained ruleset.
     Contained rulesets: ''' + ', '.join('"{}"'.format(ruleset) for ruleset in cnaming.rules.rulesets.keys()))
     parser.add_argument('file', help='File to check.')
+    parser.add_argument('--clang-args', default='', help='Arguments to pass to clang.')
     args = parser.parse_args()
 
     # Get ruleset
@@ -27,7 +29,7 @@ def main():
         ruleset = cnaming.rules.rulesets[args.ruleset]
 
     # Check file
-    result = cnaming.NamingCheck(ruleset).check(os.path.abspath(args.file))
+    result = cnaming.NamingCheck(ruleset).check(os.path.abspath(args.file), clang_args=shlex.split(args.clang_args))
 
     for res in result:
         print('{}:{}:"{}": {}'.format(
