@@ -23,6 +23,8 @@ ruleset = Ruleset(
         Rule('Constants are free', type=r'const (.+)', rule=r'(.+)', forward=True),
         # Constants
         Rule('non struct type is unrestricted', type=r'(?!s)\S+_d', rule=r'.+'),
+        # void
+        Rule('void type starts capital (as pointer)', type=r'void', rule=r'[A-Z].*'),
     ],
     typedef_declarations=[
         # Enum typedef

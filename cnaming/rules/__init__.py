@@ -24,9 +24,9 @@ class Ruleset:
             node.kind is clang.cindex.CursorKind.FIELD_DECL or \
             node.kind is clang.cindex.CursorKind.PARM_DECL:
             refed_types = [n for n in node.get_children() if n.kind is clang.cindex.CursorKind.TYPE_REF]
-            if len(refed_types) == 0:
+            if len(refed_types) == 0 and 'void *' not in node.type.spelling:
                 raise ParseError('No CursorKind.TYPE_REF found under {}:{}:{}.'.format(node.location.line, node.location.column, node.spelling))
-            declaration = Declaration(node, refed_types[0])
+            declaration = Declaration(node, refed_types[0] if refed_types else node)
             return self.check_variable_declaration(declaration, declaration.typename, declaration.declname)
 
     def check_variable_declaration(self, node, typename, declname):

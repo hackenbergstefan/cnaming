@@ -39,6 +39,7 @@ class TestHungarian(unittest.TestCase):
             uint32_t *pdwFoo;
             uint8_t *pbFoo;
             sFoobar_d *psFoo;
+            void *pFoo;
         ''')
         self.assertFalse(issues)
 
@@ -52,8 +53,9 @@ class TestHungarian(unittest.TestCase):
             uint32_t *pFoo;
             uint8_t *Foo;
             sFoobar_d *sFoo;
+            void *pbFoo;
         ''')
-        self.assertEqual(len(issues), 6)
+        self.assertEqual(len(issues), 7)
         self.assertFalse([i for i in issues if isinstance(i, cnaming.NoRuleIssue)])
 
     def test_typedef(self):
