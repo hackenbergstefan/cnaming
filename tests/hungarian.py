@@ -194,7 +194,7 @@ class TestHungarian(unittest.TestCase):
     def test_infered_type(self):
         issues = self.check_outside_function('''
             typedef uint8_t *hdl_d;
-            static const hdl_d *pFoo;
+            static const hdl_d *m_pFoo;
         ''')
         self.assertFalse(issues)
 

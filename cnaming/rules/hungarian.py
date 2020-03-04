@@ -17,6 +17,8 @@ ruleset = Ruleset(
         Rule('pointer to pointer starts with pp', type=r'p(\S+) \*|(\S+) \*\*', rule=r'pp(?:rg)?(.+)', forward=True),
         # Globals
         Rule('global starts with g_', type=r'global (.+)', rule=r'g_(.+)', forward=True),
+        # Statics
+        Rule('statics starts with m_', type=r'static (.+)', rule=r'm_(.+)', forward=True),
         # Arrays
         Rule('array starts with rg', type=r'(\w+) \[\d*\]', rule=r'rg(.+)', forward=True),
         # Constants
