@@ -32,6 +32,8 @@ class Declaration(TranslationElement):
         if node.kind is not clang.cindex.CursorKind.FIELD_DECL and \
            node.linkage is clang.cindex.LinkageKind.EXTERNAL:
             self.flags.add('global')
+        elif node.storage_class is clang.cindex.StorageClas.STATIC:
+            self.flags.add('static')
 
     @property
     def typename(self):
