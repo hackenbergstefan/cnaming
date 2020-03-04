@@ -46,8 +46,8 @@ void fubar(uint32_t dwFoo, uint8_t *prgbFoo)
 
 Running `cnaming-check hungarian tmp.c` exits with code `1` and gives the output:
 ```
-7:18:"uint32_t A": uint32_t starts with dw
-9:17:"uint8_t C": uint8_t starts with b
-15:19:"uint16_t * wX": pointer starts with p
-16:18:"uint8_t * pX": uint8_t starts with b
+tmp.c:7:18:"uint32_t A": uint32_t starts with dw
+tmp.c:9:17:"uint8_t C": uint8_t starts with b
+tmp.c:15:19:"uint16_t * wX": pointer starts with p
+tmp.c:16:18:"uint8_t * pX": uint8_t starts with b
 ```

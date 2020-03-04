@@ -32,7 +32,8 @@ def main():
     result = cnaming.NamingCheck(ruleset).check(os.path.abspath(args.file), clang_args=shlex.split(args.clang_args))
 
     for res in result:
-        print('{}:{}:"{}": {}'.format(
+        print('{}:{}:{}:"{}": {}'.format(
+            os.path.relpath(res.node.location.file.name, os.getcwd()),
             res.node.location.line,
             res.node.location.column,
             str(res.node),

@@ -23,7 +23,7 @@ class Ruleset:
         elif node.kind is clang.cindex.CursorKind.VAR_DECL or \
             node.kind is clang.cindex.CursorKind.FIELD_DECL or \
             node.kind is clang.cindex.CursorKind.PARM_DECL:
-            refed_types = [n for n in node.get_children() if n.kind is clang.cindex.CursorKind.TYPE_REF]
+            refed_types = [n for n in node.get_children() if n.kind in (clang.cindex.CursorKind.TYPE_REF, clang.cindex.CursorKind.STRUCT_DECL)]
             if len(refed_types) == 0 and 'void *' not in node.type.spelling:
                 raise ParseError('No CursorKind.TYPE_REF found under {}:{}:{}.'.format(node.location.line, node.location.column, node.spelling))
             declaration = Declaration(node, refed_types[0] if refed_types else node)
