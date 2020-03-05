@@ -221,3 +221,9 @@ class TestHungarian(unittest.TestCase):
                 clang_args=['-I{}'.format(os.path.join(tempdir, 'foo'))]
             )
             self.assertFalse(issues)
+
+    def test_comments(self):
+        issues = self.check_outside_function('''
+            const uint32_t *Foobar = 0; //cnaming -"global starts with g_" -"uint32_t starts with dw" -"pointer starts with p"
+        ''')
+        self.assertFalse(issues)

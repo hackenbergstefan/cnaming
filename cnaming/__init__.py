@@ -1,4 +1,5 @@
 import os
+import re
 
 import clang
 import clang.cindex
@@ -12,6 +13,20 @@ except clang.cindex.LibclangError:
         libs = list(sorted(glob.glob('/usr/lib/x86_64-linux-gnu/libclang-[6789].[0-9].so*')))
         if len(libs) > 0:
             clang.cindex.conf.set_library_file(libs[-1])
+
+
+def find_ignores(node):
+    comment = [
+        t.spelling
+        for t in node.translation_unit.cursor.get_tokens()
+        if all([
+            t.kind is clang.cindex.TokenKind.COMMENT,
+            t.location.line == node.location.line,
+            t.spelling.startswith('//cnaming'),
+        ])
+    ]
+    re_ignore = re.compile(r'-"(.+?)"')
+    return sum((re_ignore.findall(c) for c in comment), [])
 
 
 class TranslationElement:
@@ -35,6 +50,8 @@ class Declaration(TranslationElement):
         elif node.storage_class is clang.cindex.StorageClass.STATIC:
             self.flags.add('static')
 
+        self.ignores = find_ignores(node)
+
     @property
     def typename(self):
         return '{}{}'.format(''.join('{} '.format(f) for f in self.flags), self.node.type.spelling)
@@ -51,6 +68,8 @@ class Typedef(TranslationElement):
     def __init__(self, node):
         super().__init__(node)
         self.kind = node.underlying_typedef_type.spelling.split(' ')[0]
+
+        self.ignores = find_ignores(node)
 
 
 class NamingCheck:

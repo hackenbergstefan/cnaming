@@ -38,13 +38,13 @@ class Ruleset:
             if match_type:
                 one_matched = True
                 match_rule = rule.rule.fullmatch(declname)
-                if not match_rule:
+                if not match_rule and rule.description not in node.ignores:
                     return NamingIssue(node, rule)
                 if rule.forward:
                     return self.check_variable_declaration(
                         node,
                         [g for g in match_type.groups() if g][0],
-                        [g for g in match_rule.groups() if g][0],
+                        [g for g in match_rule.groups() if g][0] if match_rule else declname,
                     )
         if one_matched is False:
             return NoRuleIssue(node)
