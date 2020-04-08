@@ -22,7 +22,7 @@ jobs:
     - name: Test coverage with coerage and pytest
       run: |
         pip install pytest pytest-cov
-        pytest --cov-fail-under=90 --cov=cnaming --cov-report term --cov-report annotate:cov tests/*
+        pytest --cov-fail-under=85 --cov=cnaming --cov-report term --cov-report annotate:cov tests/*
     - name: Print missing coverage
       if: always()
       run: |
