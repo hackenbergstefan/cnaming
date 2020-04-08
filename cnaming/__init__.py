@@ -80,8 +80,9 @@ class NamingCheck:
     def check(self, file, clang_args=None):
         self.file = file
         tu = self.index.parse(file, args=clang_args)
-        if len(list(tu.diagnostics)) > 0:
-            return [str(d) for d in tu.diagnostics]
+        errors = [d for d in tu.diagnostics if d.severity in (clang.cindex.Diagnostic.Error, clang.cindex.Diagnostic.Fatal)]
+        if len(errors):
+            return [str(d) for d in errors]
         return self.walk(tu.cursor)
 
     def walk(self, node):
