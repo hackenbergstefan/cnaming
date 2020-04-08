@@ -111,6 +111,12 @@ class ClangError:
         self.severity = diagnostic.severity
         self.description = str(diagnostic)
 
+    def __repr__(self):
+        return '<ClangError: {}>'.format(self.description)
+
+    def __str__(self):
+        return self.description
+
 
 class Issue:
     def __init__(self, node):
