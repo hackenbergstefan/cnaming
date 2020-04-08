@@ -107,7 +107,7 @@ class TestHungarian(unittest.TestCase):
             typedef struct {} sFoobar_d;
 
             uint8_t rgbFoo[8];
-            uint32_t rgdwFoo[];
+            uint32_t rgdwFoo[5];
             sFoobar_d rgsFoo[2];
         ''')
         self.assertFalse(issues)
@@ -117,7 +117,7 @@ class TestHungarian(unittest.TestCase):
             typedef struct {} sFoobar_d;
 
             uint8_t gFoo[8];
-            uint32_t rgwFoo[];
+            uint32_t rgwFoo[5];
             sFoobar_d rgsfoo[2];
         ''')
         self.assertEqual(len(issues), 3)
@@ -125,7 +125,7 @@ class TestHungarian(unittest.TestCase):
     def test_doublepointer(self):
         issues = self.check_inside_function('''
             const uint8_t **ppbFoo;
-            uint8_t **ppbFoo;
+            uint8_t **ppbFoo2;
         ''')
         self.assertFalse(issues)
 
@@ -213,8 +213,9 @@ class TestHungarian(unittest.TestCase):
                 ''')
 
             checker = cnaming.NamingCheck(cnaming.rules.hungarian.ruleset)
-            with self.assertRaises(cnaming.ParseError):
-                checker.check(os.path.join(tempdir, 'tmp.c'))
+            issues = checker.check(os.path.join(tempdir, 'tmp.c'))
+            self.assertTrue(all(isinstance(i, cnaming.ClangError) for i in issues))
+            self.assertEqual(len(issues), 1)
 
             issues = checker.check(
                 os.path.join(tempdir, 'tmp.c'),
@@ -232,5 +233,6 @@ class TestHungarian(unittest.TestCase):
         issues = self.check_outside_function('''
             #include <foo.h>
         ''')
+        self.assertTrue(all(isinstance(i, cnaming.ClangError) for i in issues))
         self.assertEqual(len(issues), 1)
-        self.assertIn('file not found', issues[0])
+        self.assertIn('file not found', issues[0].description)

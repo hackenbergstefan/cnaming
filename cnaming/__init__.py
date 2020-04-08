@@ -82,7 +82,7 @@ class NamingCheck:
         tu = self.index.parse(file, args=clang_args)
         errors = [d for d in tu.diagnostics if d.severity in (clang.cindex.Diagnostic.Error, clang.cindex.Diagnostic.Fatal)]
         if len(errors):
-            return [str(d) for d in errors]
+            return [ClangError(d) for d in errors]
         return self.walk(tu.cursor)
 
     def walk(self, node):
@@ -104,6 +104,12 @@ class NamingCheck:
 
 class ParseError(Exception):
     pass
+
+
+class ClangError:
+    def __init__(self, diagnostic):
+        self.severity = diagnostic.severity
+        self.description = str(diagnostic)
 
 
 class Issue:
