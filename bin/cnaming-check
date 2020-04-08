@@ -32,13 +32,16 @@ def main():
     result = cnaming.NamingCheck(ruleset).check(os.path.abspath(args.file), clang_args=shlex.split(args.clang_args))
 
     for res in result:
-        print('{}:{}:{}:"{}": {}'.format(
-            os.path.relpath(res.node.location.file.name, os.getcwd()),
-            res.node.location.line,
-            res.node.location.column,
-            str(res.node),
-            str(res.rule) if isinstance(res, cnaming.NamingIssue) else 'No Rule matched',
-        ))
+        if isinstance(res, cnaming.Issue):
+            print('{}:{}:{}:"{}": {}'.format(
+                os.path.relpath(res.node.location.file.name, os.getcwd()),
+                res.node.location.line,
+                res.node.location.column,
+                str(res.node),
+                str(res.rule) if isinstance(res, cnaming.NamingIssue) else 'No Rule matched',
+            ))
+        else:
+            print(res)
 
     if len(result) > 0:
         sys.exit(1)

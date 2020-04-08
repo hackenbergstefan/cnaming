@@ -227,3 +227,10 @@ class TestHungarian(unittest.TestCase):
             const uint32_t *Foobar = 0; //cnaming -"global starts with g_" -"uint32_t starts with dw" -"pointer starts with p"
         ''')
         self.assertFalse(issues)
+
+    def test_diagnostics(self):
+        issues = self.check_outside_function('''
+            #include <foo.h>
+        ''')
+        self.assertEqual(len(issues), 1)
+        self.assertIn('file not found', issues[0])

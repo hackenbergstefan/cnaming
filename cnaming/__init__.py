@@ -80,6 +80,8 @@ class NamingCheck:
     def check(self, file, clang_args=None):
         self.file = file
         tu = self.index.parse(file, args=clang_args)
+        if len(list(tu.diagnostics)) > 0:
+            return [str(d) for d in tu.diagnostics]
         return self.walk(tu.cursor)
 
     def walk(self, node):
@@ -103,7 +105,15 @@ class ParseError(Exception):
     pass
 
 
-class NamingIssue:
+class Issue:
+    def __init__(self, node):
+        self.node = node
+
+    def __repr__(self):
+        return '<{} @{}:{}: "{}">'.format(self.__class__.__name__, self.node.location.line, self.node.location.column, self.node.spelling)
+
+
+class NamingIssue(Issue):
     def __init__(self, node, rule):
         self.node = node
         self.rule = rule
@@ -112,9 +122,5 @@ class NamingIssue:
         return '<NamingIssue @{}:{}: "{}">'.format(self.node.location.line, self.node.location.column, str(self.rule))
 
 
-class NoRuleIssue:
-    def __init__(self, node):
-        self.node = node
-
-    def __repr__(self):
-        return '<NoRuleIssue @{}:{}: "{}">'.format(self.node.location.line, self.node.location.column, self.node.spelling)
+class NoRuleIssue(Issue):
+    pass
