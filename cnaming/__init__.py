@@ -50,6 +50,9 @@ class Declaration(TranslationElement):
         elif node.storage_class is clang.cindex.StorageClass.STATIC:
             self.flags.add('static')
 
+        if node.is_bitfield():
+            self.flags.add('bitfield')
+
         self.ignores = find_ignores(node)
 
     @property
