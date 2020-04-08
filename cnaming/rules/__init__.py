@@ -3,7 +3,7 @@ import re
 import clang
 import clang.cindex
 
-from .. import Declaration, NamingIssue, NoRuleIssue, ParseError, Typedef
+from .. import Declaration, NamingIssue, NoRuleIssue, Typedef
 
 rulesets = {}
 
