@@ -10,7 +10,7 @@ except clang.cindex.LibclangError:
     import sys
     if sys.platform == 'linux':
         import glob
-        libs = list(sorted(glob.glob('/usr/lib/x86_64-linux-gnu/libclang-[6789]*.so*')))
+        libs = list(sorted(glob.glob('/usr/lib/x86_64-linux-gnu/libclang-[0-9]*.so*')))
         if len(libs) > 0:
             clang.cindex.conf.set_library_file(libs[-1])
 
